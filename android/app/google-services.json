@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "578409881225",
+    "firebase_url": "https://pedidos-luna.firebaseio.com",
+    "project_id": "pedidos-luna",
+    "storage_bucket": "pedidos-luna.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578409881225:android:cf7a3a39d3ef000dc2b058",
+        "android_client_info": {
+          "package_name": "com.pedidos.pedidos_luna"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "578409881225-uomar171n1me7o2mcjd8gd3g419l43a1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pedidos.pedidos_luna",
+            "certificate_hash": "00501f6985c37e9658d9cc99447dd130bf84d90b"
+          }
+        },
+        {
+          "client_id": "578409881225-5o29httsgp4sh9790j1lgo8qp2k3p5vv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGEqVtATENXOI1haG9rI4HbMkujQsup5E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "578409881225-5o29httsgp4sh9790j1lgo8qp2k3p5vv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
