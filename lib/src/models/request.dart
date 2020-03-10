@@ -12,7 +12,7 @@ class CustomerRequest {
   String order;
   String status;
   DateTime creationDate;
-  double totalAmout;
+  double totalAmount;
   bool validated;
   List<Product> items;
 
@@ -21,7 +21,7 @@ class CustomerRequest {
     this.order,
     this.status,
     this.creationDate,
-    this.totalAmout,
+    this.totalAmount,
     this.validated,
     this.items,
   });
@@ -31,7 +31,7 @@ class CustomerRequest {
     order: json["order"],
     status: json["status"],
     creationDate: DateTime.parse(json["creationDate"]),
-    totalAmout: json["totalAmout"].toDouble(),
+    totalAmount: json["totalAmount"].toDouble(),
     validated: json["validated"],
     items: List<Product>.from(json["items"].map((x) => x)),
   );
@@ -41,7 +41,7 @@ class CustomerRequest {
     "order": order,
     "status": status,
     "creationDate": "${creationDate.year.toString().padLeft(4, '0')}-${creationDate.month.toString().padLeft(2, '0')}-${creationDate.day.toString().padLeft(2, '0')}",
-    "totalAmout": totalAmout,
+    "totalAmount": totalAmount,
     "validated": validated,
     "items": List<dynamic>.from(items.map((x) => x)),
   };
@@ -51,7 +51,7 @@ class CustomerRequest {
   order = snapshot['order'],
   status = snapshot['status'],
   creationDate = (snapshot['creationDate'] as Timestamp).toDate(),
-  totalAmout = double.parse(snapshot['totalAmount'].toString()),
+  totalAmount = double.parse(snapshot['totalAmount'].toString()),
   validated = snapshot['validated'],
   items = List<Product>.from(snapshot['items'].map((dynamic x) => Product.fromJson(x)));
 }

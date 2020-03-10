@@ -67,10 +67,10 @@ class _LoginSocialPageState extends State<LoginSocialPage> {
         Positioned(bottom: 120.0, right: 20.0, child: circle),
         Positioned(bottom: -50.0, left: -20.0, child: circle),
         Container(
-          padding: EdgeInsets.only(top: 100.0),
+          padding: EdgeInsets.only(top: size.height * .1),
           child: Column(
             children: <Widget>[
-              Icon(Icons.shopping_cart, color: Colors.white, size: 120.0),
+              Icon(Icons.shopping_cart, color: Colors.white, size: size.width < 400 ? 70 : 120.0),
               SizedBox(
                 height: 20.0,
                 width: double.infinity,

@@ -25,7 +25,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     if(event is LoadOrder) {
       //await Future.delayed(Duration(seconds: 2));
-      _orderRepository.getOrder();
+      //_orderRepository.getOrder();
       yield Charged();
     }
 

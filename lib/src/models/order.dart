@@ -103,8 +103,9 @@ class OrderModel {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          Colors.green,
-          Color.fromRGBO(100, 224, 99, 1.0)
+          Colors.green.shade600,
+          Colors.green
+          //Color.fromRGBO(100, 224, 99, 1.0)
         ],
       );
     } else {

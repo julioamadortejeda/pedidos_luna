@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pedidos_luna/src/order/bloc/bloc.dart';
+import 'package:pedidos_luna/src/pages/customer/pre_home_page.dart';
+import 'package:pedidos_luna/src/pages/error_page.dart';
 import 'package:pedidos_luna/src/repositories/order_repository.dart';
 import 'package:provider/provider.dart';
 
-import 'package:pedidos_luna/src/pages/customer/home_page.dart';
 import 'package:pedidos_luna/src/pages/splash_screen_page.dart';
 import 'package:pedidos_luna/src/pages/login_screen.dart';
 import 'package:pedidos_luna/src/auth/bloc.dart';
@@ -56,14 +57,10 @@ class MyApp extends StatelessWidget {
               OrderRepository orderRepository = OrderRepository();
               return BlocProvider<OrderBloc>(
                 create: (context) => OrderBloc( orderRepository: orderRepository),
-                child: HomePage(),
+                child: PreHomePage(),
               );
             }
-            return Container(
-              width: 100.0,
-              height: 100.0,
-              color: Colors.red,
-            );
+            return ErrorPage();
           },
         ),
         routes: {

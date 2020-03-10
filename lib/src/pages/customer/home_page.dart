@@ -2,55 +2,75 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
+//custom imports
 import 'package:pedidos_luna/src/auth/bloc.dart';
 import 'package:pedidos_luna/src/models/order.dart';
-import 'package:pedidos_luna/src/models/request.dart';
 import 'package:pedidos_luna/src/order/bloc/bloc.dart';
+import 'package:pedidos_luna/src/pages/customer/order_not_available.dart';
 import 'package:pedidos_luna/src/repositories/order_repository.dart';
-import 'package:pedidos_luna/src/widgets/loading_widget.dart';
-import 'package:provider/provider.dart';
+import 'package:pedidos_luna/src/pages/loading_page.dart';
+import 'package:pedidos_luna/src/widgets/request_status_card_widget.dart';
 
-class HomePage extends StatelessWidget {
+class CustomerHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: close_sinks
     final OrderBloc orderBloc = BlocProvider.of<OrderBloc>(context);
-    orderBloc.add(LoadOrder());
+    //final UserRepository userRepository = Provider.of<UserRepository>(context);
+
+    //orderBloc.add(LoadOrder());
+
     final OrderRepository orderRepository = orderBloc.getOrderRepository;
-    orderRepository.getCustomer().listen((onData) {
-      final e = CustomerRequest.fromSnapshot(onData);
-      //print(e);
-    });
 
-//    final OrderRepository orderRepository =
-//        Provider.of<OrderRepository>(context);
+    return Scaffold(
+      body: StreamBuilder<QuerySnapshot>(
+          stream: orderRepository.getOrder(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> data) {
+            if (data.hasData) {
+              if(data.data.documents.length == 0) {
+                return OrderNotAvailablePage();
+              }
 
-    return BlocBuilder<OrderBloc, OrderState>(
-        builder: (BuildContext context, OrderState state) {
-      if (state is Loading)
-        return Center(
-          child: LoadingWidget(),
-        );
-      else {
-        return Scaffold(
-          body: StreamBuilder<QuerySnapshot>(
-              stream: orderRepository.getOrder(),
-              builder: (context, AsyncSnapshot<QuerySnapshot> data) {
-                if (data.hasData) {
-                  orderRepository.mapToUserModel(data.data);
-                  return Stack(children: <Widget>[
-                    _renderBackground(orderRepository),
-                    _renderCards(context, orderRepository),
-                  ]);
-                }
+              orderRepository.mapToUserModel(data.data);
 
-                return Center(
-                  child: LoadingWidget(),
-                );
-              }),
-        );
-      }
-    });
+              return Stack(children: <Widget>[
+                _renderBackground(orderRepository),
+                _renderCards(context, orderRepository),
+              ]);
+            }
+
+            return Center(
+              child: LoadingWidget(),
+            );
+          }),
+    );
+
+//    return BlocBuilder<OrderBloc, OrderState>(
+//        builder: (BuildContext context, OrderState state) {
+//      if (state is Loading)
+//        return LoadingWidget();
+//      else {
+//        return Scaffold(
+//          body: StreamBuilder<QuerySnapshot>(
+//              stream: orderRepository.getOrder(),
+//              builder: (context, AsyncSnapshot<QuerySnapshot> data) {
+//                if (data.hasData) {
+//                  orderRepository.mapToUserModel(data.data);
+//
+//                  return Stack(children: <Widget>[
+//                    _renderBackground(orderRepository),
+//                    _renderCards(context, orderRepository),
+//                  ]);
+//                }
+//
+//                return Center(
+//                  child: LoadingWidget(),
+//                );
+//              }),
+//        );
+//      }
+//    });
   }
 
   Widget _renderBackground(OrderRepository orderRepository) {
@@ -81,9 +101,8 @@ class HomePage extends StatelessWidget {
         Expanded(
           flex: smallScreen ? 2 : 3,
           child: Padding(
-            padding: EdgeInsets.symmetric(vertical: smallScreen ? 5.0 : 50.0),
-            child: _renderRequestStatus(context, orderRepository.orderModel),
-          ),
+              padding: EdgeInsets.symmetric(vertical: smallScreen ? 5.0 : 50.0),
+              child: _renderRequestStatus(orderRepository)),
         ),
         Expanded(
           flex: smallScreen ? 1 : 1,
@@ -130,19 +149,15 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _renderOrderCard(BuildContext context, Size size, OrderModel orderModel) {
-    //final bool smallScreen = size.height < 600;
-    print(size.width);
-    print(size.height);
-    //final UserRepository _userRepository = Provider.of<UserRepository>(context);
+//    print(size.width);
+//    print(size.height);
+
     return Container(
       width: size.width,
-      //color: Colors.red,
       padding: EdgeInsets.only(
         left: 50.0,
         right: 50.0,
-        //top: size.height * 0.05,
       ),
-      //height: size.height * (size.height < 600 ? 0.65 : 0.60),---------
       child: Card(
         margin: EdgeInsets.symmetric(vertical: 20),
         elevation: 5.0,
@@ -154,9 +169,7 @@ class HomePage extends StatelessWidget {
               SizedBox(
                 height: 25.0,
               ),
-              //Text(_userRepository.getDisplayName()),
               Container(
-                //padding: EdgeInsets.only(top: size.height * 0.01),
                 child: Text(
                   'PEDIDO #${orderModel.orderNumber}',
                   style: TextStyle(
@@ -165,9 +178,7 @@ class HomePage extends StatelessWidget {
                       fontWeight: FontWeight.w400),
                 ),
               ),
-              //Expanded(child: Container(),),
               Container(
-                //padding: EdgeInsets.only(top: size.height * 0.01),
                 child: Text(
                   orderModel.status,
                   style: TextStyle(
@@ -189,10 +200,7 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: Container(),
               ),
-              //Expanded(child: Container()),
               Container(
-                //margin: EdgeInsets.symmetric(horizontal: .0),
-                //margin: EdgeInsets.only(top: size.height * 0.01),-----
                 child: Text(
                   'Termina el:',
                   style: TextStyle(
@@ -201,7 +209,6 @@ class HomePage extends StatelessWidget {
                       color: orderModel.color),
                 ),
               ),
-              //SizedBox(height: size.height * 0.01,),
               Text(
                 DateFormat('dd/MMM/yyyy - hh:mm a').format(orderModel.endDate),
                 style: TextStyle(
@@ -217,61 +224,11 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _renderRequestStatus(BuildContext context, OrderModel orderModel) {
-    return Container(
-      //color: Colors.red,
-      padding: EdgeInsets.only(
-        left: 50.0,
-        right: 50.0,
-        //top: size.height * 0.05,
-      ),
-      //height: size.height * (size.height < 600 ? 0.65 : 0.60),---------
-      child: Card(
-        elevation: 5.0,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        child: InkWell(
-          splashColor: orderModel.color.withAlpha(100),
-          onTap: () {
-            Navigator.pushNamed(context, 'order_detail');
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
-            child: Column(mainAxisAlignment: MainAxisAlignment.center,
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-//                  Container(
-//                    //padding: EdgeInsets.only(top: size.height * 0.02),
-//                    child: Text(
-//                      'Estatus de tu order',
-//                      style: TextStyle(
-//                          color: order.color,
-//                          fontSize: 24.0,
-//                          fontWeight: FontWeight.w600),
-//                    ),
-//                  ),
-                  //Expanded(child: Container()),
-                  Container(
-                    //margin: EdgeInsets.only(top: 10.0),
-                    //padding: EdgeInsets.only(top: size.height * 0.01),
-                    child: Text(
-                      'En validacion',
-                      style: TextStyle(
-                          color: Colors.orange,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  //SizedBox(height: 15.0,),
-                ]),
-          ),
-        ),
-      ),
-    );
+  Widget _renderRequestStatus(OrderRepository orderRepository) {
+    return RequestStatusCard(orderRepository: orderRepository);
   }
 
-  Widget _renderCardMessage(
-      BuildContext context, Size size, OrderModel orderModel) {
+  Widget _renderCardMessage(BuildContext context, Size size, OrderModel orderModel) {
     return Container(
       decoration: BoxDecoration(
           borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
@@ -327,16 +284,13 @@ class HomePage extends StatelessWidget {
   }
 
   void _showDialog(BuildContext context) {
-    // flutter defined function
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // return object of type Dialog
         return AlertDialog(
           title: new Text("Cerrar Sesion"),
           content: new Text("Estas seguro de que quieres salir?"),
           actions: <Widget>[
-            // usually buttons at the bottom of the dialog
             new FlatButton(
               child: new Text("No"),
               onPressed: () {

@@ -25,7 +25,7 @@ class LoadingWidget extends StatelessWidget {
   }
 
   Widget _renderIcon(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    //final size = MediaQuery.of(context).size;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
