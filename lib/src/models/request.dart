@@ -53,5 +53,5 @@ class CustomerRequest {
   creationDate = (snapshot['creationDate'] as Timestamp).toDate(),
   totalAmount = double.parse(snapshot['totalAmount'].toString()),
   validated = snapshot['validated'],
-  items = List<Product>.from(snapshot['items'].map((dynamic x) => Product.fromJson(x)));
+  items = snapshot['items'] == null ? null : List<Product>.from(snapshot['items'].map((dynamic x) => Product.fromJson(x)));
 }

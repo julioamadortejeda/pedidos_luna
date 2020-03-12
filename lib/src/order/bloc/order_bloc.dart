@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:pedidos_luna/src/repositories/order_repository.dart';
+import 'package:pedidos_luna/src/repositories/customer_repository.dart';
 import 'package:meta/meta.dart';
 import './bloc.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
-  final OrderRepository _orderRepository;
+  final CustomerRepository _orderRepository;
 
-  OrderBloc({@required OrderRepository orderRepository})
+  OrderBloc({@required CustomerRepository orderRepository})
   : assert(orderRepository != null),
   _orderRepository = orderRepository;
 
@@ -34,5 +34,5 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  OrderRepository get getOrderRepository => _orderRepository;
+  CustomerRepository get getOrderRepository => _orderRepository;
 }

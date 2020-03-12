@@ -12,7 +12,6 @@ class FirestoreProvider {
   }
 
 
-
   Stream<QuerySnapshot> getCurrentOrder2() {
     final snapshot = _firestore.collection('orders').where('isCurrent', isEqualTo: true)
         .limit(1).snapshots();
@@ -25,33 +24,6 @@ class FirestoreProvider {
     final Stream<DocumentSnapshot> snap = _firestore.collection('users').document(uID).snapshots();
 
     return snap;
-  }
-
-//  Stream<QuerySnapshot> getCustomerInfo(String userID, OrderModel order) {
-//    final DocumentReference snap = _firestore.collection('users').document(userID);
-//
-//
-//    final w = snap.collection(order.id).snapshots();
-//
-//    return w;
-//  }
-
-
-  // pruebas
-  Stream<DocumentSnapshot> getCustomerRequest2(String userID, OrderModel order) {
-    final DocumentReference snap = _firestore.collection('users').document(userID);
-    final e =  snap.snapshots();
-    //final w = snap.collection(order.id).snapshots();
-  e.listen((onData) {
-    final red = onData.reference.collection(order.id);
-    red.snapshots().listen((onData) {
-      print(onData.documents[0]['status']);
-    });
-    
-    print(onData['prueba']);
-    print(onData['JGITpOLFY3VDPH4nxJnu']);
-  });
-    return e;
   }
 
   Stream<QuerySnapshot> getCustomerRequest(String userID, OrderModel order) {

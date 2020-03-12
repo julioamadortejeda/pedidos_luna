@@ -1,20 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pedidos_luna/src/pages/customer/pre_request_detail_page.dart';
 
-import 'package:pedidos_luna/src/repositories/order_repository.dart';
-import 'package:pedidos_luna/src/repositories/user_repository.dart';
+import 'package:pedidos_luna/src/repositories/customer_repository.dart';
 import 'package:provider/provider.dart';
 
 class RequestStatusCard extends StatelessWidget {
-  final OrderRepository orderRepository;
+  final CustomerRepository customer;
 
-  RequestStatusCard({Key key, this.orderRepository}) : super(key: key);
+  RequestStatusCard({Key key, this.customer}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final UserRepository userRepository = Provider.of<UserRepository>(context);
 
-    final orderModel = orderRepository.orderModel;
+    final orderModel = customer.orderModel;
 
     return Container(
       padding: EdgeInsets.only(
@@ -29,12 +28,19 @@ class RequestStatusCard extends StatelessWidget {
         child: InkWell(
           splashColor: orderModel.color.withAlpha(100),
           onTap: () {
-            Navigator.pushNamed(context, 'order_detail');
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider<CustomerRepository>.value(
+                  value: customer,
+              child: PreRequestDetailPage(),)
+            ));
+
+           // Navigator.push(context, MaterialPageRoute(builder: (context)=>PreRequestDetailPage()));
+           // Navigator.pushNamed(context, 'check_customer_request');
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
             child: StreamBuilder<QuerySnapshot>(
-              stream: orderRepository.getCustomerStatusRequest(),
+              stream: customer.getCustomerRequest(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 String validationText = 'Cargando';
                 DocumentSnapshot data;
@@ -47,11 +53,9 @@ class RequestStatusCard extends StatelessWidget {
                   else {
                     data = snapshot.data.documents[0];
 
-                    orderRepository.fillCustomerInfo(data);
-                    validationText =orderRepository.customerInfo.request.status;
+                    customer.fillCustomerInfo(data);
+                    validationText =customer.customerInfo.request.status;
 
-                    print(orderRepository.customerInfo.phone);
-                    print(orderRepository.customerInfo.request.status);
                   }
                 }
 

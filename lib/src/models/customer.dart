@@ -33,7 +33,7 @@ class Customer {
 
   Customer.fromSnapshot(DocumentSnapshot snapshot)
       : id = snapshot.documentID,
-        phone = snapshot['phone'],
+        phone = snapshot['phoneNumber'],
         active = snapshot['active'],
         request = CustomerRequest();
 

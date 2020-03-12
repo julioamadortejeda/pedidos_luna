@@ -5,38 +5,37 @@ import 'package:intl/intl.dart';
 
 //custom imports
 import 'package:pedidos_luna/src/auth/bloc.dart';
-import 'package:pedidos_luna/src/models/order.dart';
-import 'package:pedidos_luna/src/order/bloc/bloc.dart';
 import 'package:pedidos_luna/src/pages/customer/order_not_available.dart';
-import 'package:pedidos_luna/src/repositories/order_repository.dart';
+import 'package:pedidos_luna/src/repositories/customer_repository.dart';
 import 'package:pedidos_luna/src/pages/loading_page.dart';
 import 'package:pedidos_luna/src/widgets/request_status_card_widget.dart';
 
+import '../error_page.dart';
+
 class CustomerHomePage extends StatelessWidget {
+  final CustomerRepository customer;
+  CustomerHomePage({Key key, this.customer});
+
   @override
   Widget build(BuildContext context) {
-    // ignore: close_sinks
-    final OrderBloc orderBloc = BlocProvider.of<OrderBloc>(context);
-    //final UserRepository userRepository = Provider.of<UserRepository>(context);
-
-    //orderBloc.add(LoadOrder());
-
-    final OrderRepository orderRepository = orderBloc.getOrderRepository;
+    //final CustomerRepository customer = Provider.of<CustomerRepository>(context);
 
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
-          stream: orderRepository.getOrder(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> data) {
-            if (data.hasData) {
-              if(data.data.documents.length == 0) {
+          stream: customer.getOrder(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if(snapshot.hasError) return ErrorPage();
+
+            if (snapshot.hasData) {
+              if(snapshot.data.documents.length == 0) {
                 return OrderNotAvailablePage();
               }
 
-              orderRepository.mapToUserModel(data.data);
+              customer.mapToUserModel(snapshot.data);
 
               return Stack(children: <Widget>[
-                _renderBackground(orderRepository),
-                _renderCards(context, orderRepository),
+                _renderBackground(customer),
+                _renderCards(context, customer),
               ]);
             }
 
@@ -45,43 +44,17 @@ class CustomerHomePage extends StatelessWidget {
             );
           }),
     );
-
-//    return BlocBuilder<OrderBloc, OrderState>(
-//        builder: (BuildContext context, OrderState state) {
-//      if (state is Loading)
-//        return LoadingWidget();
-//      else {
-//        return Scaffold(
-//          body: StreamBuilder<QuerySnapshot>(
-//              stream: orderRepository.getOrder(),
-//              builder: (context, AsyncSnapshot<QuerySnapshot> data) {
-//                if (data.hasData) {
-//                  orderRepository.mapToUserModel(data.data);
-//
-//                  return Stack(children: <Widget>[
-//                    _renderBackground(orderRepository),
-//                    _renderCards(context, orderRepository),
-//                  ]);
-//                }
-//
-//                return Center(
-//                  child: LoadingWidget(),
-//                );
-//              }),
-//        );
-//      }
-//    });
   }
 
-  Widget _renderBackground(OrderRepository orderRepository) {
+  Widget _renderBackground(CustomerRepository customer) {
     return Positioned.fill(
         child: Container(
       decoration:
-          BoxDecoration(gradient: orderRepository.orderModel.background),
+          BoxDecoration(gradient: customer.orderModel.background),
     ));
   }
 
-  Widget _renderCards(BuildContext context, OrderRepository orderRepository) {
+  Widget _renderCards(BuildContext context, CustomerRepository customer) {
     final size = MediaQuery.of(context).size;
     final bool smallScreen = size.height < 600;
 
@@ -95,18 +68,18 @@ class CustomerHomePage extends StatelessWidget {
           flex: smallScreen ? 10 : 8,
           child: Padding(
             padding: EdgeInsets.only(top: (smallScreen ? 0 : 15.0)),
-            child: _renderOrderCard(context, size, orderRepository.orderModel),
+            child: _renderOrderCard(context, size, customer.orderModel),
           ),
         ),
         Expanded(
           flex: smallScreen ? 2 : 3,
           child: Padding(
               padding: EdgeInsets.symmetric(vertical: smallScreen ? 5.0 : 50.0),
-              child: _renderRequestStatus(orderRepository)),
+              child: _renderRequestStatus(customer)),
         ),
         Expanded(
           flex: smallScreen ? 1 : 1,
-          child: _renderCardMessage(context, size, orderRepository.orderModel),
+          child: _renderCardMessage(context, size, customer.orderModel),
         )
       ],
     );
@@ -224,8 +197,8 @@ class CustomerHomePage extends StatelessWidget {
     );
   }
 
-  Widget _renderRequestStatus(OrderRepository orderRepository) {
-    return RequestStatusCard(orderRepository: orderRepository);
+  Widget _renderRequestStatus(CustomerRepository customer) {
+    return RequestStatusCard(customer: customer);
   }
 
   Widget _renderCardMessage(BuildContext context, Size size, OrderModel orderModel) {
